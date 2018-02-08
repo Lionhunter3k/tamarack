@@ -30,3 +30,4 @@ _ReSharper*/
 *.nupkg
 #Ignore Release directory
 /Release
+/.vs
