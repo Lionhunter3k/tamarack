@@ -12,7 +12,7 @@ namespace Tamarack.Test.Pipeline
 		{
 			var context = new MyContext { Value = "hi" };
 
-			var pipeline = new Pipeline<MyContext>();
+			var pipeline = new ActionPipeline<MyContext>();
 			pipeline.Execute(context);
 
 			Assert.That(context.Value, Is.EqualTo("hi"));
@@ -23,7 +23,7 @@ namespace Tamarack.Test.Pipeline
 		{
 			var context = new MyContext { Value = "one" };
 
-			var pipeline = new Pipeline<MyContext>();
+			var pipeline = new ActionPipeline<MyContext>();
 			pipeline.Add(new AppendToValue(", two"));
 			pipeline.Add(new AppendToValue(", three"));
 			pipeline.Execute(context);
@@ -38,7 +38,7 @@ namespace Tamarack.Test.Pipeline
 		public string Value { get; set; }
 	}
 
-	public class AppendToValue : IFilter<MyContext>
+	public class AppendToValue : IActionFilter<MyContext>
 	{
 		private readonly string text;
 

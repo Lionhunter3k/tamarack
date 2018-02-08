@@ -2,8 +2,8 @@
 
 namespace Tamarack
 {
-	public class ActivatorServiceProvider : IServiceProvider
-	{
+	public class ActivatorServiceProvider : ITamarackServiceProvider
+    {
 		public object GetService(Type serviceType)
 		{
 			return Activator.CreateInstance(serviceType);

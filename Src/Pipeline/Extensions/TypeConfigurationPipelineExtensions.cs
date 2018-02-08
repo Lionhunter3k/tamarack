@@ -4,33 +4,59 @@ using Tamarack.Configuration;
 
 namespace Tamarack.Pipeline.Extensions
 {
-	public static class TypeConfigurationPipelineExtensions
-	{
-		public static Pipeline<T, TOut> AddConfigurationSection<T, TOut>(this Pipeline<T, TOut> pipeline, string section)
-		{
-			ForEachTypeIn(section, t => pipeline.Add(t));
+    /// <summary>
+    /// Class TypeConfigurationPipelineExtensions.
+    /// </summary>
+    public static class TypeConfigurationPipelineExtensions
+    {
+        /// <summary>
+        /// Adds the configuration section.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TOut">The type of the t out.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="section">The section.</param>
+        /// <returns>Pipeline&lt;T, TOut&gt;.</returns>
+        public static IPipeline<T, TOut> AddConfigurationSection<T, TOut>(this IPipeline<T, TOut> pipeline, string section)
+        {
+            return ForEachTypeIn(section, pipeline, (t, p) => t.Add(t));
+        }
 
-			return pipeline;
-		}
+        /// <summary>
+        /// Adds the configuration section.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="section">The section.</param>
+        /// <returns>ActionPipeline&lt;T&gt;.</returns>
+        public static IPipeline<T> AddConfigurationSection<T>(this IPipeline<T> pipeline, string section)
+        {
+            return ForEachTypeIn(section, pipeline, (t, p) => t.Add(t));
+        }
 
-		public static Pipeline<T> AddConfigurationSection<T>(this Pipeline<T> pipeline, string section)
-		{
-			ForEachTypeIn(section, t => pipeline.Add(t));
+        public static IPublisher<T> AddConfigurationSection<T>(this IPublisher<T> pipeline, string section)
+        {
+            return ForEachTypeIn(section, pipeline, (t,p) => t.Add(t));
+        }
 
-			return pipeline;
-		}
+        /// <summary>
+        /// Fors the each type in.
+        /// </summary>
+        /// <param name="section">The section.</param>
+        /// <param name="action">The action.</param>
+        /// <exception cref="System.ArgumentException">Configuration section '" + section + "' required</exception>
+        private static TPipeline ForEachTypeIn<TPipeline>(string section, TPipeline pipeline, Func<TPipeline, Type, TPipeline> action)
+        {
+            var config = (TypeCollectionConfigurationSection)ConfigurationManager.GetSection(section);
 
-		private static void ForEachTypeIn(string section, Action<Type> action)
-		{
-			var config = (TypeCollectionConfigurationSection)ConfigurationManager.GetSection(section);
+            if (config == null)
+                throw new ArgumentException("Configuration section '" + section + "' required");
 
-			if (config == null)
-				throw new ArgumentException("Configuration section '" + section + "' required");
-
-			foreach (TypeConfigurationElement element in config.TypeCollection)
-			{
-				action(element.Type);
-			}
-		}
-	}
+            foreach (TypeConfigurationElement element in config.TypeCollection)
+            {
+                pipeline = action(pipeline, element.Type);
+            }
+            return pipeline;
+        }
+    }
 }

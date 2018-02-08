@@ -3,8 +3,8 @@ using Microsoft.Practices.Unity;
 
 namespace Tamarack.Test
 {
-	public class UnityServiceProvider : IServiceProvider
-	{
+	public class UnityServiceProvider : ITamarackServiceProvider
+    {
 		private readonly IUnityContainer container;
 
 		public UnityServiceProvider(IUnityContainer container)

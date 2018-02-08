@@ -28,12 +28,12 @@ namespace Tamarack.Test.Pipeline
 		{
 			var context = new MyContext();
 
-			var numbers = new Pipeline<MyContext>()
+			var numbers = new ActionPipeline<MyContext>()
 				.Add(new AppendToValue("1"))
 				.Add(new AppendToValue("2"))
 				.Add(new AppendToValue("3"));
 
-			new Pipeline<MyContext>()
+			new ActionPipeline<MyContext>()
 				.Add(numbers)
 				.Add(new AppendToValue("4"))
 				.Execute(context);

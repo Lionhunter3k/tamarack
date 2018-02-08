@@ -9,7 +9,7 @@ namespace Tamarack.Test.Pipeline.Extensions
 	[TestFixture]
 	public class AddFiltersInAssemblyTests
 	{
-		private IServiceProvider serviceProvider;
+		private ITamarackServiceProvider serviceProvider;
 
 		[SetUp]
 		public void SetUp()

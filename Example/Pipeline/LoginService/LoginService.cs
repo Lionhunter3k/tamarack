@@ -6,9 +6,9 @@ namespace Tamarack.Example.Pipeline.LoginService
 {
 	public class LoginService
 	{
-		private readonly IServiceProvider serviceProvider;
+		private readonly ITamarackServiceProvider serviceProvider;
 
-		public LoginService(IServiceProvider serviceProvider)
+		public LoginService(ITamarackServiceProvider serviceProvider)
 		{
 			this.serviceProvider = serviceProvider;
 		}
