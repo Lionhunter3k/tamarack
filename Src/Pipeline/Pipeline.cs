@@ -5,11 +5,12 @@ using System.Linq;
 namespace Tamarack.Pipeline
 {
     /// <summary>
-    /// Class FuncPipeline.
+    /// Class Pipeline.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <seealso cref="Nop.Core.Infrastructure.Tamarack.Pipeline.IPipeline{T}" />
-    public class FuncPipeline<T> : IPipeline<T>
+    /// <typeparam name="TOut">The type of the t out.</typeparam>
+    /// <seealso cref="Nop.Core.Infrastructure.Tamarack.Pipeline.IPipeline{T, TOut}" />
+    public class Pipeline<T, TOut> : IPipeline<T, TOut>
     {
         /// <summary>
         /// The service provider
@@ -18,24 +19,29 @@ namespace Tamarack.Pipeline
         /// <summary>
         /// The filters
         /// </summary>
-        private readonly IList<IFuncFilter<T>> filters;
+        private readonly IList<IFilter<T, TOut>> filters;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FuncPipeline{T}"/> class.
+        /// Initializes a new instance of the <see cref="Pipeline{T, TOut}"/> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        public FuncPipeline(ITamarackServiceProvider serviceProvider)
+        public Pipeline(ITamarackServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            filters = new List<IFuncFilter<T>>();
+            filters = new List<IFilter<T, TOut>>();
+        }
+
+        public Pipeline()
+            :this(new ActivatorServiceProvider())
+        {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FuncPipeline{T}"/> class.
+        /// Initializes a new instance of the <see cref="Pipeline{T, TOut}"/> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="filters">The filters.</param>
-        protected FuncPipeline(ITamarackServiceProvider serviceProvider, IEnumerable<IFuncFilter<T>> filters)
+        protected Pipeline(ITamarackServiceProvider serviceProvider, IEnumerable<IFilter<T, TOut>> filters)
         {
             this.serviceProvider = serviceProvider;
             this.filters = filters.ToList();
@@ -54,58 +60,62 @@ namespace Tamarack.Pipeline
         /// Adds the specified filter.
         /// </summary>
         /// <param name="filter">The filter.</param>
-        /// <returns>IPipeline&lt;T&gt;.</returns>
-        public IPipeline<T> Add(IFuncFilter<T> filter)
+        /// <returns>IPipeline&lt;T, TOut&gt;.</returns>
+        public IPipeline<T, TOut> Add(IFilter<T, TOut> filter)
         {
-            var newFilters = this.filters.ToList();
+            var newFilters = filters.ToList();
             newFilters.Add(filter);
-            return new FuncPipeline<T>(this.serviceProvider, newFilters);
+            return new Pipeline<T, TOut>(this.serviceProvider, newFilters);
         }
 
         /// <summary>
         /// Adds the specified filter type.
         /// </summary>
         /// <param name="filterType">Type of the filter.</param>
-        /// <returns>IPipeline&lt;T&gt;.</returns>
-        public IPipeline<T> Add(Type filterType)
+        /// <returns>IPipeline&lt;T, TOut&gt;.</returns>
+        public IPipeline<T, TOut> Add(Type filterType)
         {
-            return Add((IFuncFilter<T>)serviceProvider.GetService(filterType));
+            return Add((IFilter<T, TOut>)serviceProvider.GetService(filterType));
         }
+
 
         /// <summary>
         /// Adds this instance.
         /// </summary>
         /// <typeparam name="TFilter">The type of the t filter.</typeparam>
-        /// <returns>IPipeline&lt;T&gt;.</returns>
-        public IPipeline<T> Add<TFilter>() where TFilter : IFuncFilter<T>
+        /// <returns>IPipeline&lt;T, TOut&gt;.</returns>
+        public IPipeline<T, TOut> Add<TFilter>() where TFilter : IFilter<T, TOut>
         {
             return Add(typeof(TFilter));
         }
 
         /// <summary>
-        /// Executes this instance.
+        /// Executes the specified input.
         /// </summary>
-        /// <returns>T.</returns>
-        public T Execute()
+        /// <param name="input">The input.</param>
+        /// <returns>TOut.</returns>
+        public TOut Execute(T input)
         {
-            var tail = new Func<T>(() => { throw new EndOfChainException(); });
-            return ((IFuncFilter<T>)this).Execute(tail);
+            var tail = new Func<T, TOut>(x => { throw new EndOfChainException(); });
+
+            return ((IFilter<T, TOut>)this).Execute(input, tail);
         }
 
         /// <summary>
-        /// Executes the specified execute next.
+        /// Executes the specified input.
         /// </summary>
+        /// <param name="input">The input.</param>
         /// <param name="executeNext">The execute next.</param>
-        /// <returns>T.</returns>
-        T IFuncFilter<T>.Execute(Func<T> executeNext)
+        /// <returns>TOut.</returns>
+        TOut IFilter<T, TOut>.Execute(T input, Func<T, TOut> executeNext)
         {
             var current = 0;
-            Func<Func<T>> GetNext = null;
+            Func<Func<T, TOut>> GetNext = null;
             GetNext = () => current < filters.Count
-                ? () => filters[current++].Execute(GetNext())
+                ? x => filters[current++].Execute(x, GetNext())
                 : executeNext;
 
-            return GetNext().Invoke();
+            return GetNext().Invoke(input);
         }
     }
 }
