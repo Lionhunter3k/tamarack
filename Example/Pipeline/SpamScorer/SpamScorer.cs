@@ -2,6 +2,7 @@
 using Tamarack.Example.Pipeline.SpamScorer.Filters;
 using Tamarack.Pipeline;
 using Tamarack.Pipeline.Extensions;
+using Tamarack.Configuration.Extensions;
 
 namespace Tamarack.Example.Pipeline.SpamScorer
 {

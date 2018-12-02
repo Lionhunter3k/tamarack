@@ -9,8 +9,7 @@ namespace Tamarack.Test.Pipeline
 		[Test]
 		public void Should_execute_final_function()
 		{
-			var pipeline = new Pipeline<int, string>();
-			pipeline.Finally(x => x + "!");
+			var pipeline = new Pipeline<int, string>().Finally(x => x + "!");
 
 			var output = pipeline.Execute(2);
 
@@ -37,8 +36,7 @@ namespace Tamarack.Test.Pipeline
 		[Test]
 		public void Should_not_require_final_function_when_chain_short_circuits()
 		{
-			var pipeline = new Pipeline<int, string>();
-			pipeline.Add(new ShortCircuit());
+			var pipeline = new Pipeline<int, string>().Add(new ShortCircuit());
 
 			var output = pipeline.Execute(2);
 

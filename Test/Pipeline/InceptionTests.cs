@@ -36,6 +36,7 @@ namespace Tamarack.Test.Pipeline
 			new ActionPipeline<MyContext>()
 				.Add(numbers)
 				.Add(new AppendToValue("4"))
+                .Finally(x => { })
 				.Execute(context);
 
 			Assert.That(context.Value, Is.EqualTo("1234"));

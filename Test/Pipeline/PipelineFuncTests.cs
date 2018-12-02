@@ -10,9 +10,7 @@ namespace Tamarack.Test.Pipeline
 		[Test]
 		public void Filter_can_modify_input()
 		{
-			var pipeline = new Pipeline<int, string>();
-			pipeline.Add(new AddToInput(3));
-			pipeline.Finally(x => x + "!");
+			var pipeline = new Pipeline<int, string>().Add(new AddToInput(3)).Finally(x => x + "!");
 
 			var output = pipeline.Execute(2);
 
@@ -22,9 +20,7 @@ namespace Tamarack.Test.Pipeline
 		[Test]
 		public void Filter_can_modify_output()
 		{
-			var pipeline = new Pipeline<int, string>();
-			pipeline.Add(new AppendToOutput("#"));
-			pipeline.Finally(x => x + "!");
+			var pipeline = new Pipeline<int, string>().Add(new AppendToOutput("#")).Finally(x => x + "!");
 
 			var output = pipeline.Execute(2);
 
@@ -34,10 +30,7 @@ namespace Tamarack.Test.Pipeline
 		[Test]
 		public void Should_apply_each_filter_in_order_added()
 		{
-			var pipeline = new Pipeline<int, string>();
-			pipeline.Add(new AddToInput(2));
-			pipeline.Add(new AppendToOutput("@"));
-			pipeline.Finally(x => x + "!");
+			var pipeline = new Pipeline<int, string>().Add(new AddToInput(2)).Add(new AppendToOutput("@")).Finally(x => x + "!");
 
 			var output = pipeline.Execute(2);
 

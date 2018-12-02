@@ -93,7 +93,7 @@ namespace Tamarack.Pipeline
         /// <param name="input">The input.</param>
         public void Execute(T input)
         {
-            var tail = new Action<T>((t) => { throw new EndOfChainException(); });
+            var tail = new Action<T>((t) => { });
             ((IActionFilter<T>)this).Execute(input, tail);
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Tamarack.Pipeline;
-using Tamarack.Pipeline.Extensions;
+using Tamarack.Configuration.Extensions;
 
 namespace Tamarack.Test.Pipeline.Extensions
 {

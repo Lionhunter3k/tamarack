@@ -23,9 +23,8 @@ namespace Tamarack.Test.Pipeline
 		{
 			var context = new MyContext { Value = "one" };
 
-			var pipeline = new ActionPipeline<MyContext>();
-			pipeline.Add(new AppendToValue(", two"));
-			pipeline.Add(new AppendToValue(", three"));
+			var pipeline = new ActionPipeline<MyContext>().Add(new AppendToValue(", two")).Add(new AppendToValue(", three")).Finally(x => { });
+
 			pipeline.Execute(context);
 
 			Assert.That(context.Value, Is.EqualTo("one, two, three"));

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <Title>Tamarack.Example</Title>
     <Product>Tamarack.Example</Product>
     <Copyright>Copyright ©  2018</Copyright>
@@ -20,6 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\Tamarack.csproj" />
+    <ProjectReference Include="..\Tamarack.Configuration\Tamarack.Configuration.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
